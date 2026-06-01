@@ -1,0 +1,357 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gap: 12px;
+  /* curva fluida (easeOutQuint) reaproveitada em todas as microinterações */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 0.18s;
+  --t-med: 0.32s;
+  /* personalização ao vivo por coluna (C1..C5), seção "Ajustes" na C1.
+     tint = cor, amt = intensidade sobre a base, a = opacidade, rad = cantos,
+     blur = desfoque, bord = espessura da borda, shadow = força da sombra.
+     As fórmulas --cN-fill ficam em .light/.dark (usam as bases por tema). */
+  --c1-tint:#888888; --c1-amt:0%; --c1-a:100%; --c1-rad:0px;  --c1-blur:0px; --c1-bord:0px; --c1-shadow:0px;  --c1-pad:12px;
+  --c2-tint:#888888; --c2-amt:0%; --c2-a:0%;   --c2-rad:0px;  --c2-blur:0px; --c2-bord:0px; --c2-shadow:0px;  --c2-pad:12px;
+  --c3-tint:#888888; --c3-amt:0%; --c3-a:72%;  --c3-rad:14px; --c3-blur:6px; --c3-bord:1px; --c3-shadow:16px; --c3-pad:16px;
+  --c4-tint:#888888; --c4-amt:0%; --c4-a:72%;  --c4-rad:14px; --c4-blur:6px; --c4-bord:1px; --c4-shadow:16px; --c4-pad:12px;
+  --c5-tint:#888888; --c5-amt:0%; --c5-a:0%;   --c5-rad:0px;  --c5-blur:0px; --c5-bord:0px; --c5-shadow:0px;  --c5-pad:12px;
+
+  /* itens dentro das colunas (botões da C1/C5, opções da C2, título dos cards C4) */
+  --c1-isize:40px; --c1-iconsize:20px; --c1-irad:11px; --c1-ibord:0px;
+  --c5-isize:40px; --c5-iconsize:20px; --c5-irad:11px; --c5-ibord:1px;
+  --c2-irad:10px;  --c2-ipad:9px;      --c2-ibord:1px;
+
+  /* efeitos de movimento (globais) */
+  --hover-lift:1px; --hover-scale:1; --press-scale:0.92; --icon-scale:1.08;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+  gap: var(--gap);
+  padding: 0;            /* nada de recuo externo: bordas ancoradas */
+  align-items: stretch;
+  transition: color var(--t-med) var(--ease);
+}
+
+/* paleta coesa: passos curtos entre fundo / rebaixado / elevado */
+.light {
+  --bg: #ececed;        /* fundo total (C2, C4, C5 vivem aqui) */
+  --sunken: #e4e4e6;    /* C1 — só um tom abaixo do fundo */
+  --raised: #fbfbfc;    /* superfícies elevadas: C3, cards (off-white suave) */
+  --ink: #1d1d20;
+  --muted: #a6a6ac;
+  --line: #e3e3e6;
+  --line-strong: #d4d4d8;
+  --hover: #e6e6e8;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 6px 16px rgba(0,0,0,.05);
+  --shadow-lift: 0 2px 6px rgba(0,0,0,.06), 0 14px 34px rgba(0,0,0,.10);
+  --sh-color: rgba(0,0,0,.12);
+  --c1-base: var(--sunken); --c2-base: var(--bg); --c3-base: var(--raised); --c4-base: var(--raised); --c5-base: var(--bg);
+  --c1-fill: color-mix(in srgb, color-mix(in srgb, var(--c1-base), var(--c1-tint) var(--c1-amt)) var(--c1-a), transparent);
+  --c2-fill: color-mix(in srgb, color-mix(in srgb, var(--c2-base), var(--c2-tint) var(--c2-amt)) var(--c2-a), transparent);
+  --c3-fill: color-mix(in srgb, color-mix(in srgb, var(--c3-base), var(--c3-tint) var(--c3-amt)) var(--c3-a), transparent);
+  --c4-fill: color-mix(in srgb, color-mix(in srgb, var(--c4-base), var(--c4-tint) var(--c4-amt)) var(--c4-a), transparent);
+  --c5-fill: color-mix(in srgb, color-mix(in srgb, var(--c5-base), var(--c5-tint) var(--c5-amt)) var(--c5-a), transparent);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.dark {
+  --bg: #131315;        /* fundo total */
+  --sunken: #0e0e10;    /* C1 — só um tom abaixo do fundo */
+  --raised: #1e1e21;    /* superfícies elevadas */
+  --ink: #f4f4f5;
+  --muted: #6f6f74;
+  --line: #2a2a2d;
+  --line-strong: #38383c;
+  --hover: #242427;
+  --shadow: 0 1px 2px rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.45);
+  --shadow-lift: 0 2px 8px rgba(0,0,0,.45), 0 14px 34px rgba(0,0,0,.6);
+  --sh-color: rgba(0,0,0,.5);
+  --c1-base: var(--sunken); --c2-base: var(--bg); --c3-base: var(--raised); --c4-base: var(--raised); --c5-base: var(--bg);
+  --c1-fill: color-mix(in srgb, color-mix(in srgb, var(--c1-base), var(--c1-tint) var(--c1-amt)) var(--c1-a), transparent);
+  --c2-fill: color-mix(in srgb, color-mix(in srgb, var(--c2-base), var(--c2-tint) var(--c2-amt)) var(--c2-a), transparent);
+  --c3-fill: color-mix(in srgb, color-mix(in srgb, var(--c3-base), var(--c3-tint) var(--c3-amt)) var(--c3-a), transparent);
+  --c4-fill: color-mix(in srgb, color-mix(in srgb, var(--c4-base), var(--c4-tint) var(--c4-amt)) var(--c4-a), transparent);
+  --c5-fill: color-mix(in srgb, color-mix(in srgb, var(--c5-base), var(--c5-tint) var(--c5-amt)) var(--c5-a), transparent);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* ---------- C1 rail (escuro, ancorado, cantos retos) ---------- */
+.rail {
+  width: 60px; flex: 0 0 60px;
+  background: var(--c1-fill);
+  backdrop-filter: blur(var(--c1-blur)); -webkit-backdrop-filter: blur(var(--c1-blur));
+  border: var(--c1-bord) solid var(--c1-bordc, var(--line)); border-radius: var(--c1-rad);
+  box-shadow: 0 calc(var(--c1-shadow) * 0.35) var(--c1-shadow) var(--sh-color);
+  display: flex; flex-direction: column; align-items: center;
+  padding: var(--c1-pad) 0; gap: 14px;
+}
+.rail-tools { display: flex; flex-direction: column; gap: 8px; }
+.rail-btn {
+  width: var(--c1-isize); height: var(--c1-isize);
+  border: var(--c1-ibord) solid transparent; border-radius: var(--c1-irad);
+  background: var(--c1-bg-idle, transparent); color: var(--c1-fg-idle, var(--ink));
+  cursor: pointer; display: grid; place-items: center; font-size: 18px;
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+.rail-btn:hover { background: var(--c1-bg-hover, var(--hover)); border-color: var(--line); transform: translateY(calc(-1 * var(--hover-lift))) scale(var(--hover-scale)); }
+.rail-btn:active { transform: scale(var(--press-scale)); }
+.rail-btn.active { background: var(--c1-bg-sel, var(--raised)); color: var(--c1-fg-sel, var(--ink)); border-color: var(--c1-bord-sel, var(--line)); box-shadow: var(--shadow); }
+.rail-btn svg { width: var(--c1-iconsize); height: var(--c1-iconsize); fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--t-med) var(--ease); }
+.rail-btn:hover svg { transform: scale(var(--icon-scale)); }
+
+/* ---------- C2 navbar secundária (nível de fundo): opções de texto ---------- */
+.subnav {
+  width: 230px; flex: 0 0 230px;
+  background: var(--c2-fill);
+  backdrop-filter: blur(var(--c2-blur)); -webkit-backdrop-filter: blur(var(--c2-blur));
+  border: var(--c2-bord) solid var(--c2-bordc, var(--line)); border-radius: var(--c2-rad);
+  box-shadow: 0 calc(var(--c2-shadow) * 0.35) var(--c2-shadow) var(--sh-color);
+  display: flex; flex-direction: column;
+  padding: var(--c2-pad) 10px; gap: 2px;
+  overflow-y: auto;
+}
+.subnav-title {
+  padding: 6px 10px 10px; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.nav-item {
+  position: relative;
+  text-align: left;
+  padding: var(--c2-ipad) 12px;
+  border: var(--c2-ibord) solid transparent; border-radius: var(--c2-irad);
+  background: var(--c2-bg-idle, transparent); color: var(--c2-fg-idle, var(--ink));
+  font-size: 13px; cursor: pointer;
+  transition: transform var(--t-fast) var(--ease), padding-left var(--t-fast) var(--ease);
+}
+.nav-item:hover { background: var(--c2-bg-hover, var(--hover)); padding-left: 15px; }
+.nav-item:active { transform: scale(var(--press-scale)); }
+.nav-item.active { background: var(--c2-bg-sel, var(--raised)); color: var(--c2-fg-sel, var(--ink)); border-color: var(--c2-bord-sel, var(--line)); font-weight: 600; box-shadow: var(--shadow); }
+/* marca fluida que desliza no item ativo */
+.nav-item.active::before {
+  content: ''; position: absolute; left: 6px; top: 50%;
+  width: 3px; height: 16px; border-radius: 3px; background: var(--c2-ind, var(--ink));
+  transform: translateY(-50%); opacity: .55;
+}
+
+/* ---------- zona de fundo (C4): transparente, sem chrome ---------- */
+.zone {
+  background: transparent;
+  display: flex; flex-direction: column;
+  padding: 4px 4px;
+  position: relative;
+}
+.side  { flex: 0 0 auto; transition: width var(--t-med) var(--ease), padding var(--t-med) var(--ease); }
+.side.resizing { transition: none; }   /* arraste do resizer acompanha 1:1 (sem lag) */
+
+/* ---------- C3 central, FLUTUANTE (descolada + sombra) ---------- */
+.mid {
+  flex: 1 1 0; min-width: 220px;
+  margin-block: 14px;
+  background: var(--c3-fill);
+  backdrop-filter: blur(var(--c3-blur));
+  -webkit-backdrop-filter: blur(var(--c3-blur));
+  border: var(--c3-bord) solid var(--c3-bordc, var(--line));
+  border-radius: var(--c3-rad);
+  box-shadow: 0 calc(var(--c3-shadow) * 0.35) var(--c3-shadow) var(--sh-color);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.mid-h { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.col-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 14px; font-size: 13px; font-weight: 600;
+  border-bottom: 1px solid var(--line);
+}
+.mid-body { flex: 1; padding: var(--c3-pad); font-size: 13px; }
+
+/* ---------- C4: superfície única; cards posicionados por transform ---------- */
+.side-cols {
+  flex: 1; position: relative;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-gutter: stable;        /* evita o "pulo" quando a barra aparece */
+  scroll-behavior: smooth;
+}
+.board { position: relative; width: 100%; }
+
+/* mesmo nível visual da C3: mesmo background + mesma sombra */
+.card {
+  position: absolute; top: 0; left: 0;
+  background: var(--c4-fill);
+  backdrop-filter: blur(var(--c4-blur));
+  -webkit-backdrop-filter: blur(var(--c4-blur));
+  border: var(--c4-bord) solid var(--c4-bordc, var(--line));
+  border-radius: var(--c4-rad);
+  box-shadow: 0 calc(var(--c4-shadow) * 0.35) var(--c4-shadow) var(--sh-color);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  cursor: grab;
+  will-change: transform;
+  transition: width var(--t-med) var(--ease), transform var(--t-med) var(--ease),
+              border-color var(--t-fast) var(--ease);
+}
+.card:hover { box-shadow: var(--shadow-lift); border-color: var(--line-strong); }
+.card:active { cursor: grabbing; }
+/* slot que desliza para o destino enquanto o card é arrastado (placeholder tracejado) */
+.card.placeholder {
+  pointer-events: none;
+  background: transparent;
+  border: 1.5px dashed var(--line-strong);
+  box-shadow: none;
+}
+.card.placeholder > * { opacity: 0; }
+/* clone que segue o ponteiro: destacado, sem transição (acompanha 1:1) */
+.drag-clone {
+  position: fixed; top: 0; left: 0; z-index: 1000;
+  pointer-events: none;
+  box-shadow: var(--shadow-lift);
+  cursor: grabbing;
+  transition: none;
+  will-change: transform;
+}
+.card-title {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; font-size: 13px; font-weight: 500;
+  border-bottom: 1px solid var(--line);
+  background: var(--c4-title-bg, transparent); color: var(--c4-fg-idle, var(--ink));
+}
+.card-title span:nth-child(2) { flex: 1; }
+.card-fill { flex: 1; display: grid; place-items: center; font-size: 12px; }
+
+/* ---------- C5 rail de opções (nível de fundo) ---------- */
+.edge {
+  width: 56px; flex: 0 0 56px;
+  margin-left: -6px;          /* mais colada na C4 */
+  background: var(--c5-fill);
+  backdrop-filter: blur(var(--c5-blur)); -webkit-backdrop-filter: blur(var(--c5-blur));
+  border: var(--c5-bord) solid var(--c5-bordc, var(--line)); border-radius: var(--c5-rad);
+  box-shadow: 0 calc(var(--c5-shadow) * 0.35) var(--c5-shadow) var(--sh-color);
+  display: flex; flex-direction: column; align-items: center;
+  padding: var(--c5-pad) 0; gap: 8px;
+}
+.edge-btn {
+  position: relative;
+  width: var(--c5-isize); height: var(--c5-isize);
+  border: var(--c5-ibord) solid var(--line); border-radius: var(--c5-irad);
+  background: var(--c5-bg-idle, transparent); color: var(--c5-fg-idle, var(--ink));
+  cursor: pointer; display: grid; place-items: center;
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+.edge-btn:hover { background: var(--c5-bg-hover, var(--hover)); border-color: var(--line-strong); transform: translateY(calc(-1 * var(--hover-lift))) scale(var(--hover-scale)); }
+.edge-btn:active { transform: scale(var(--press-scale)); }
+/* indicativo: opção com card(s) aberto(s) na C4 */
+.edge-btn.active { background: var(--c5-bg-sel, var(--raised)); color: var(--c5-fg-sel, var(--ink)); border-color: var(--c5-bord-sel, var(--line-strong)); box-shadow: var(--shadow); }
+.edge-btn svg { width: var(--c5-iconsize); height: var(--c5-iconsize); fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--t-med) var(--ease); }
+.edge-btn:hover svg { transform: scale(var(--icon-scale)); }
+.badge {
+  position: absolute; top: -5px; right: -5px;
+  min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 8px;
+  background: var(--c5-badge-bg, var(--ink)); color: var(--c5-badge-fg, var(--bg));
+  font-size: 10px; font-weight: 700;
+  display: grid; place-items: center;
+  border: 2px solid var(--bg);
+  animation: badge-pop var(--t-med) var(--ease);
+}
+@keyframes badge-pop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.18); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ---------- elementos comuns ---------- */
+.muted { color: var(--muted); font-weight: 400; font-size: 12px; }
+.grip { color: var(--muted); cursor: grab; font-size: 12px; }
+.x {
+  border: none; background: transparent; color: var(--muted);
+  font-size: 18px; line-height: 1; cursor: pointer;
+  width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center;
+  transition: color var(--t-fast) var(--ease), background var(--t-fast) var(--ease), transform var(--t-fast) var(--ease);
+}
+.x:hover { color: var(--ink); background: var(--hover); transform: rotate(90deg); }
+.x:active { transform: rotate(90deg) scale(0.85); }
+
+/* ---------- scrollbars discretas (fluidez) ---------- */
+.side-cols, .subnav { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+.side-cols::-webkit-scrollbar, .subnav::-webkit-scrollbar { width: 8px; }
+.side-cols::-webkit-scrollbar-thumb, .subnav::-webkit-scrollbar-thumb {
+  background: var(--line-strong); border-radius: 8px;
+  border: 2px solid transparent; background-clip: padding-box;
+}
+.side-cols::-webkit-scrollbar-thumb:hover, .subnav::-webkit-scrollbar-thumb:hover { background: var(--muted); background-clip: padding-box; }
+
+/* respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ---------- resizers ---------- */
+.resizer-x {
+  position: absolute; top: 0; right: -1px; width: 10px; height: 100%;
+  cursor: col-resize; z-index: 2;
+}
+.resizer-x.left { right: auto; left: -4px; }
+.resizer-x::after {
+  content: ''; position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
+  width: 3px; height: 30px; border-radius: 3px; background: var(--line-strong);
+  transition: background var(--t-fast) var(--ease), height var(--t-fast) var(--ease), width var(--t-fast) var(--ease);
+}
+.resizer-x.left::after { right: auto; left: 4px; }
+.resizer-x:hover::after { background: var(--muted); height: 52px; width: 4px; }
+
+.resizer-y {
+  position: absolute; bottom: -1px; left: 0; width: 100%; height: 10px;
+  cursor: row-resize; z-index: 2;
+}
+.resizer-y::after {
+  content: ''; position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%);
+  height: 3px; width: 30px; border-radius: 3px; background: var(--line-strong);
+  transition: background var(--t-fast) var(--ease), width var(--t-fast) var(--ease), height var(--t-fast) var(--ease);
+}
+.resizer-y:hover::after { background: var(--muted); width: 52px; height: 4px; }
+
+/* ---------- painel de ajustes (C3, seção "Ajustes" da C1) ---------- */
+.ctrl { display: flex; flex-direction: column; gap: 12px; max-width: 380px; margin-top: 8px; }
+.ctrl-row { display: flex; flex-direction: column; gap: 6px; }
+.ctrl label { font-size: 12px; display: flex; justify-content: space-between; align-items: baseline; }
+.ctrl-val { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; }
+.ctrl input[type="range"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px; border-radius: 4px; background: var(--line-strong); cursor: pointer;
+}
+.ctrl input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--ink); border: 2px solid var(--raised); box-shadow: var(--shadow);
+  transition: transform var(--t-fast) var(--ease);
+}
+.ctrl input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+/* abas de alvo (qual coluna editar) */
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+.tab {
+  padding: 6px 12px; border-radius: 999px; font-size: 12px;
+  border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+}
+.tab:hover { color: var(--ink); border-color: var(--line-strong); }
+.tab.active { background: var(--raised); color: var(--ink); border-color: var(--line-strong); font-weight: 600; box-shadow: var(--shadow); }
+
+/* linha de cor: picker nativo + valor */
+.color-row { display: flex; align-items: center; gap: 10px; }
+.ctrl input[type="color"] {
+  -webkit-appearance: none; appearance: none;
+  width: 44px; height: 28px; padding: 0; cursor: pointer;
+  border: 1px solid var(--line-strong); border-radius: 8px; background: transparent;
+}
+.ctrl input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+.ctrl input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
+.reset {
+  font-size: 11px; color: var(--muted); cursor: pointer;
+  border: 1px solid var(--line); border-radius: 7px; background: transparent;
+  padding: 4px 8px; transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+}
+.reset:hover { color: var(--ink); border-color: var(--line-strong); }
